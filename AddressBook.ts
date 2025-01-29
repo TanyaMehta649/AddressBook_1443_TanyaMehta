@@ -29,7 +29,6 @@ function addContact() {
                         rl.question("Enter Zip Code: ", (zip) => {
                             rl.question("Enter Phone Number: ", (phoneNumber) => {
                                 rl.question("Enter Email: ", (email) => {
-                                    
                                     addressBook.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
                                     console.log("\nContact added successfully!\n");
 
@@ -51,7 +50,7 @@ function addContact() {
 }
 
 function displayAddressBook() {
-    console.log("\n--- Address Book ---");
+    console.log(" Address Book");
     addressBook.forEach((contact, index) => {
         console.log(`Contact ${index + 1}:`);
         console.log(`  Name: ${contact.firstName} ${contact.lastName}`);
@@ -63,11 +62,13 @@ function displayAddressBook() {
 }
 
 function mainMenu() {
-    rl.question("\nWhat would you like to do? (1: Add Contact, 2: Edit Contact, 3: Exit): ", (choice) => {
+    rl.question("\nWhat would you like to do? (1: Add Contact, 2: Edit Contact, 3: Delete Contact, 4: Exit): ", (choice) => {
         if (choice === "1") {
             addContact();
         } else if (choice === "2") {
             editContact();
+        } else if (choice === "3") {
+            deleteContact();
         } else {
             rl.close();
         }
@@ -77,7 +78,6 @@ function mainMenu() {
 function editContact() {
     rl.question("Enter the first name of the contact you want to edit: ", (firstName) => {
         rl.question("Enter the last name of the contact you want to edit: ", (lastName) => {
-            
             const contact = addressBook.find(contact => contact.firstName === firstName && contact.lastName === lastName);
 
             if (contact) {
@@ -108,6 +108,23 @@ function editContact() {
                         });
                     });
                 });
+            } else {
+                console.log("Contact not found.");
+                mainMenu();
+            }
+        });
+    });
+}
+
+function deleteContact() {
+    rl.question("Enter the first name of the contact you want to delete: ", (firstName) => {
+        rl.question("Enter the last name of the contact you want to delete: ", (lastName) => {
+            const index = addressBook.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
+
+            if (index !== -1) {
+                addressBook.splice(index, 1); 
+                console.log("Contact deleted successfully!");
+                displayAddressBook();
             } else {
                 console.log("Contact not found.");
                 mainMenu();
