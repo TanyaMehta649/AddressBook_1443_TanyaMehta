@@ -31,13 +31,13 @@ function addContact() {
                                 rl.question("Enter Email: ", (email) => {
                                     
                                     addressBook.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
-                                    console.log("\n✅ Contact added successfully!\n");
+                                    console.log("Contact added successfully!\n");
 
                                     rl.question("Add another contact? (yes/no): ", (answer) => {
                                         if (answer.toLowerCase() === "yes") {
                                             addContact();
                                         } else {
-                                            console.log("\n📖 Address Book:");
+                                            console.log(" Address Book:");
                                             console.log(addressBook);
                                             rl.close();
                                         }
@@ -52,5 +52,5 @@ function addContact() {
     });
 }
 
-// Start input
+
 addContact();
