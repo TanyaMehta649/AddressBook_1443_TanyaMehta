@@ -103,14 +103,40 @@ function addContact() {
     });
 }
 
+function searchPersonByCityOrState() {
+    rl.question("Enter City or State to search for a person: ", (location) => {
+        const results: Contact[] = [];
+
+        addressBooks.forEach(book => {
+            book.contacts.forEach(contact => {
+                if (contact.city.toLowerCase() === location.toLowerCase() || contact.state.toLowerCase() === location.toLowerCase()) {
+                    results.push(contact);
+                }
+            });
+        });
+
+        if (results.length > 0) {
+            console.log("\nSearch Results:");
+            results.forEach(contact => {
+                console.log(`${contact.firstName} ${contact.lastName}, ${contact.city}, ${contact.state}, ${contact.phoneNumber}, ${contact.email}`);
+            });
+        } else {
+            console.log("No contacts found in the given city or state.");
+        }
+        mainMenu();
+    });
+}
+
 function mainMenu() {
-    rl.question("\nWhat would you like to do? (1: Create Address Book, 2: Switch Address Book, 3: Add Contact, 4: Exit): ", (choice) => {
+    rl.question("\nWhat would you like to do? (1: Create Address Book, 2: Switch Address Book, 3: Add Contact, 4: Search Person by City/State, 5: Exit): ", (choice) => {
         if (choice === "1") {
             createAddressBook();
         } else if (choice === "2") {
             switchAddressBook();
         } else if (choice === "3") {
             addContact();
+        } else if (choice === "4") {
+            searchPersonByCityOrState();
         } else {
             rl.close();
         }
