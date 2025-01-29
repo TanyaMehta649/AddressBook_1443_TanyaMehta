@@ -1,45 +1,45 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var readline = require("readline");
 var rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout,
+    output: process.stdout
 });
-var AddressBook = /** @class */ (function () {
-    function AddressBook() {
-        this.contacts = [];
+var Contact = /** @class */ (function () {
+    function Contact(firstName, lastName, address, city, state, zip, phoneNumber, email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.zip = zip;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
     }
-    AddressBook.prototype.addContact = function (contact) {
-        this.contacts.push(contact);
-        console.log("Contact added successfully.");
-    };
-    AddressBook.prototype.viewContacts = function () {
-        if (this.contacts.length === 0) {
-            console.log("No contacts found.");
-        }
-        else {
-            console.log("Address Book Contacts:");
-            this.contacts.forEach(function (contact, index) {
-                console.log("".concat(index + 1, ". ").concat(contact.firstName, " ").concat(contact.lastName));
-                console.log("   Address: ".concat(contact.address, ", ").concat(contact.city, ", ").concat(contact.state, ", ").concat(contact.zip));
-                console.log("   Phone: ".concat(contact.phoneNo));
-                console.log("   Email: ".concat(contact.email));
-            });
-        }
-    };
-    return AddressBook;
+    return Contact;
 }());
-var addressBook = new AddressBook();
-var addNewContact = function () {
+var addressBook = [];
+function addContact() {
     rl.question("Enter First Name: ", function (firstName) {
         rl.question("Enter Last Name: ", function (lastName) {
             rl.question("Enter Address: ", function (address) {
                 rl.question("Enter City: ", function (city) {
                     rl.question("Enter State: ", function (state) {
-                        rl.question("Enter ZIP Code: ", function (zip) {
-                            rl.question("Enter Phone Number: ", function (phoneNo) {
+                        rl.question("Enter Zip Code: ", function (zip) {
+                            rl.question("Enter Phone Number: ", function (phoneNumber) {
                                 rl.question("Enter Email: ", function (email) {
-                                    var contact = { firstName: firstName, lastName: lastName, address: address, city: city, state: state, zip: zip, phoneNo: phoneNo, email: email };
-                                    addressBook.addContact(contact);
-                                    mainMenu();
+                                    addressBook.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
+                                    console.log("\n✅ Contact added successfully!\n");
+                                    rl.question("Add another contact? (yes/no): ", function (answer) {
+                                        if (answer.toLowerCase() === "yes") {
+                                            addContact();
+                                        }
+                                        else {
+                                            console.log("\n📖 Address Book:");
+                                            console.log(addressBook);
+                                            rl.close();
+                                        }
+                                    });
                                 });
                             });
                         });
@@ -48,27 +48,6 @@ var addNewContact = function () {
             });
         });
     });
-};
-var mainMenu = function () {
-    console.log("\n     ADDRESS BOOK MENU\n    1. Add a new contact\n    2. View all contacts\n    3. Exit\n    ");
-    rl.question("Choose an option (1-3): ", function (choice) {
-        switch (choice.trim()) {
-            case "1":
-                addNewContact();
-                break;
-            case "2":
-                addressBook.viewContacts();
-                mainMenu();
-                break;
-            case "3":
-                console.log("Exit!");
-                rl.close();
-                break;
-            default:
-                console.log("❌ Invalid option. Please try again.");
-                mainMenu();
-                break;
-        }
-    });
-};
-mainMenu();
+}
+// Start input
+addContact();
