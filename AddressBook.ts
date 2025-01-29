@@ -31,14 +31,20 @@ function addContact() {
                                 rl.question("Enter Email: ", (email) => {
                                     
                                     addressBook.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
-                                    console.log("Contact added successfully!\n");
+                                    console.log("\nContact added successfully!\n");
 
                                     rl.question("Add another contact? (yes/no): ", (answer) => {
                                         if (answer.toLowerCase() === "yes") {
                                             addContact();
                                         } else {
-                                            console.log(" Address Book:");
-                                            console.log(addressBook);
+                                            console.log(" Address Book ");
+                                            addressBook.forEach((contact, index) => {
+                                                console.log(`Contact ${index + 1}:`);
+                                                console.log(`  Name: ${contact.firstName} ${contact.lastName}`);
+                                                console.log(`  Address: ${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`);
+                                                console.log(`  Phone: ${contact.phoneNumber}`);
+                                                console.log(`  Email: ${contact.email}\n`);
+                                            });
                                             rl.close();
                                         }
                                     });
@@ -51,6 +57,5 @@ function addContact() {
         });
     });
 }
-
 
 addContact();

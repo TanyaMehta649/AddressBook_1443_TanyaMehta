@@ -29,14 +29,20 @@ function addContact() {
                             rl.question("Enter Phone Number: ", function (phoneNumber) {
                                 rl.question("Enter Email: ", function (email) {
                                     addressBook.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
-                                    console.log("\n✅ Contact added successfully!\n");
+                                    console.log("\nContact added successfully!\n");
                                     rl.question("Add another contact? (yes/no): ", function (answer) {
                                         if (answer.toLowerCase() === "yes") {
                                             addContact();
                                         }
                                         else {
-                                            console.log("\n📖 Address Book:");
-                                            console.log(addressBook);
+                                            console.log(" Address Book ");
+                                            addressBook.forEach(function (contact, index) {
+                                                console.log("Contact ".concat(index + 1, ":"));
+                                                console.log("  Name: ".concat(contact.firstName, " ").concat(contact.lastName));
+                                                console.log("  Address: ".concat(contact.address, ", ").concat(contact.city, ", ").concat(contact.state, " ").concat(contact.zip));
+                                                console.log("  Phone: ".concat(contact.phoneNumber));
+                                                console.log("  Email: ".concat(contact.email, "\n"));
+                                            });
                                             rl.close();
                                         }
                                     });
@@ -49,5 +55,4 @@ function addContact() {
         });
     });
 }
-// Start input
 addContact();
