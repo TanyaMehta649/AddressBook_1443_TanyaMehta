@@ -20,7 +20,26 @@ class Contact {
 
 const addressBook: Contact[] = [];
 
-function addContact() {
+function addMultipleContacts() {
+    rl.question("How many contacts would you like to add? ", (num) => {
+        const count = parseInt(num);
+        if (isNaN(count) || count <= 0) {
+            console.log("Invalid number. Please enter a valid number.");
+            mainMenu();
+            return;
+        }
+        addContact(count);
+    });
+}
+
+function addContact(remaining: number) {
+    if (remaining <= 0) {
+        console.log("\nAll contacts added successfully!\n");
+        displayAddressBook();
+        return;
+    }
+
+    console.log(`\nAdding Contact ${addressBook.length + 1}:`);
     rl.question("Enter First Name: ", (firstName) => {
         rl.question("Enter Last Name: ", (lastName) => {
             rl.question("Enter Address: ", (address) => {
@@ -32,13 +51,7 @@ function addContact() {
                                     addressBook.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
                                     console.log("\nContact added successfully!\n");
 
-                                    rl.question("Add another contact? (yes/no): ", (answer) => {
-                                        if (answer.toLowerCase() === "yes") {
-                                            addContact();
-                                        } else {
-                                            displayAddressBook();
-                                        }
-                                    });
+                                    addContact(remaining - 1); // Continue adding the next contact
                                 });
                             });
                         });
@@ -50,7 +63,7 @@ function addContact() {
 }
 
 function displayAddressBook() {
-    console.log(" Address Book");
+    console.log("\n--- Address Book ---");
     addressBook.forEach((contact, index) => {
         console.log(`Contact ${index + 1}:`);
         console.log(`  Name: ${contact.firstName} ${contact.lastName}`);
@@ -62,9 +75,9 @@ function displayAddressBook() {
 }
 
 function mainMenu() {
-    rl.question("\nWhat would you like to do? (1: Add Contact, 2: Edit Contact, 3: Delete Contact, 4: Exit): ", (choice) => {
+    rl.question("\nWhat would you like to do? (1: Add Contacts, 2: Edit Contact, 3: Delete Contact, 4: Exit): ", (choice) => {
         if (choice === "1") {
-            addContact();
+            addMultipleContacts();
         } else if (choice === "2") {
             editContact();
         } else if (choice === "3") {
@@ -122,7 +135,7 @@ function deleteContact() {
             const index = addressBook.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
 
             if (index !== -1) {
-                addressBook.splice(index, 1); 
+                addressBook.splice(index, 1);
                 console.log("Contact deleted successfully!");
                 displayAddressBook();
             } else {
