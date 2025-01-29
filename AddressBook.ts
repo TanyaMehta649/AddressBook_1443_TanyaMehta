@@ -18,9 +18,57 @@ class Contact {
     ) {}
 }
 
-const addressBook: Contact[] = [];
+class AddressBook {
+    constructor(public name: string, public contacts: Contact[] = []) {}
+}
+
+const addressBooks: AddressBook[] = [];
+let currentAddressBook: AddressBook | null = null;
+
+function createAddressBook() {
+    rl.question("Enter a name for the new Address Book: ", (name) => {
+        if (addressBooks.some(book => book.name === name)) {
+            console.log("An address book with this name already exists. Try again.");
+            mainMenu();
+            return;
+        }
+        const newBook = new AddressBook(name);
+        addressBooks.push(newBook);
+        currentAddressBook = newBook;
+        console.log(`Address Book "${name}" created and selected.`);
+        mainMenu();
+    });
+}
+
+function switchAddressBook() {
+    if (addressBooks.length === 0) {
+        console.log("No address books available. Create one first.");
+        mainMenu();
+        return;
+    }
+
+    console.log("\nAvailable Address Books:");
+    addressBooks.forEach((book, index) => console.log(`${index + 1}: ${book.name}`));
+
+    rl.question("Enter the number of the Address Book to switch to: ", (num) => {
+        const index = parseInt(num) - 1;
+        if (index >= 0 && index < addressBooks.length) {
+            currentAddressBook = addressBooks[index];
+            console.log(`Switched to Address Book "${currentAddressBook.name}".`);
+        } else {
+            console.log("Invalid selection. Try again.");
+        }
+        mainMenu();
+    });
+}
 
 function addMultipleContacts() {
+    if (!currentAddressBook) {
+        console.log("No Address Book selected. Please create or switch to one first.");
+        mainMenu();
+        return;
+    }
+
     rl.question("How many contacts would you like to add? ", (num) => {
         const count = parseInt(num);
         if (isNaN(count) || count <= 0) {
@@ -33,13 +81,19 @@ function addMultipleContacts() {
 }
 
 function addContact(remaining: number) {
+    if (!currentAddressBook) {
+        console.log("No Address Book selected.");
+        mainMenu();
+        return;
+    }
+
     if (remaining <= 0) {
         console.log("\nAll contacts added successfully!\n");
         displayAddressBook();
         return;
     }
 
-    console.log(`\nAdding Contact ${addressBook.length + 1}:`);
+    console.log(`\nAdding Contact ${currentAddressBook.contacts.length + 1}:`);
     rl.question("Enter First Name: ", (firstName) => {
         rl.question("Enter Last Name: ", (lastName) => {
             rl.question("Enter Address: ", (address) => {
@@ -48,10 +102,10 @@ function addContact(remaining: number) {
                         rl.question("Enter Zip Code: ", (zip) => {
                             rl.question("Enter Phone Number: ", (phoneNumber) => {
                                 rl.question("Enter Email: ", (email) => {
-                                    addressBook.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
+                                    currentAddressBook?.contacts.push(new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email));
                                     console.log("\nContact added successfully!\n");
 
-                                    addContact(remaining - 1); // Continue adding the next contact
+                                    addContact(remaining - 1);
                                 });
                             });
                         });
@@ -63,35 +117,34 @@ function addContact(remaining: number) {
 }
 
 function displayAddressBook() {
-    console.log("\n--- Address Book ---");
-    addressBook.forEach((contact, index) => {
+    if (!currentAddressBook) {
+        console.log("No Address Book selected.");
+        mainMenu();
+        return;
+    }
+
+    console.log(`\n--- Address Book: ${currentAddressBook.name} ---`);
+    currentAddressBook.contacts.forEach((contact, index) => {
         console.log(`Contact ${index + 1}:`);
         console.log(`  Name: ${contact.firstName} ${contact.lastName}`);
         console.log(`  Address: ${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`);
         console.log(`  Phone: ${contact.phoneNumber}`);
         console.log(`  Email: ${contact.email}\n`);
     });
+
     mainMenu();
 }
 
-function mainMenu() {
-    rl.question("\nWhat would you like to do? (1: Add Contacts, 2: Edit Contact, 3: Delete Contact, 4: Exit): ", (choice) => {
-        if (choice === "1") {
-            addMultipleContacts();
-        } else if (choice === "2") {
-            editContact();
-        } else if (choice === "3") {
-            deleteContact();
-        } else {
-            rl.close();
-        }
-    });
-}
-
 function editContact() {
+    if (!currentAddressBook) {
+        console.log("No Address Book selected.");
+        mainMenu();
+        return;
+    }
+
     rl.question("Enter the first name of the contact you want to edit: ", (firstName) => {
         rl.question("Enter the last name of the contact you want to edit: ", (lastName) => {
-            const contact = addressBook.find(contact => contact.firstName === firstName && contact.lastName === lastName);
+            const contact = currentAddressBook?.contacts.find(contact => contact.firstName === firstName && contact.lastName === lastName);
 
             if (contact) {
                 console.log("\nContact found. Let's edit the details:");
@@ -130,12 +183,18 @@ function editContact() {
 }
 
 function deleteContact() {
+    if (!currentAddressBook) {
+        console.log("No Address Book selected.");
+        mainMenu();
+        return;
+    }
+
     rl.question("Enter the first name of the contact you want to delete: ", (firstName) => {
         rl.question("Enter the last name of the contact you want to delete: ", (lastName) => {
-            const index = addressBook.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
+            const index = currentAddressBook?.contacts.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
 
-            if (index !== -1) {
-                addressBook.splice(index, 1);
+            if (index !== -1 && index !== undefined) {
+                currentAddressBook?.contacts.splice(index, 1);
                 console.log("Contact deleted successfully!");
                 displayAddressBook();
             } else {
@@ -143,6 +202,24 @@ function deleteContact() {
                 mainMenu();
             }
         });
+    });
+}
+
+function mainMenu() {
+    rl.question("\nWhat would you like to do? (1: Create Address Book, 2: Switch Address Book, 3: Add Contacts, 4: Edit Contact, 5: Delete Contact, 6: Exit): ", (choice) => {
+        if (choice === "1") {
+            createAddressBook();
+        } else if (choice === "2") {
+            switchAddressBook();
+        } else if (choice === "3") {
+            addMultipleContacts();
+        } else if (choice === "4") {
+            editContact();
+        } else if (choice === "5") {
+            deleteContact();
+        } else {
+            rl.close();
+        }
     });
 }
 
